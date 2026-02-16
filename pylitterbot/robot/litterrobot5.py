@@ -145,9 +145,9 @@ class LitterLevelState(Enum):
 class NightLightMode(Enum):
     """Night light mode of a Litter-Robot 5 unit."""
 
-    OFF = "off"
-    ON = "on"
-    AUTO = "auto"
+    OFF = "Off"
+    ON = "On"
+    AUTO = "Auto"
 
 
 @unique
@@ -486,13 +486,13 @@ class LitterRobot5(LitterRobot):
     @property
     def night_light_mode(self) -> NightLightMode | None:
         """Return the night light mode setting."""
-        mode = str(self._night_light_settings.get("mode", "")).lower()
+        mode = str(self._night_light_settings.get("mode", "")).capitalize()
         return to_enum(mode, NightLightMode)
 
     @property
     def night_light_mode_enabled(self) -> bool:
         """Return `True` if night light mode is enabled."""
-        return str(self._night_light_settings.get("mode", "")).lower() != "off"
+        return str(self._night_light_settings.get("mode", "")).capitalize() != "Off"
 
     @property
     def panel_brightness(self) -> BrightnessLevel | None:
@@ -884,6 +884,13 @@ class LitterRobot5(LitterRobot):
         return await self._dispatch_command(
             LitterRobot5Command.NIGHT_LIGHT_SETTINGS,
             value={"brightness": brightness},
+        )
+
+    async def set_night_light_color(self, color: str) -> bool:
+        """Set the night light color (hex string, e.g. '#FFFF' or '#FF00FF')."""
+        return await self._dispatch_command(
+            LitterRobot5Command.NIGHT_LIGHT_SETTINGS,
+            value={"color": color},
         )
 
     async def set_night_light_mode(self, mode: NightLightMode) -> bool:
